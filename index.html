@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Equinox | Modular TES Investor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+    <!-- Chosen Palette: "Thermal Balance" - Slate/Zinc base (neutral) with Ice Blue (cooling/tech) and Warm Orange (peak/alert) accents. -->
+    <!-- Application Structure Plan:
+        1. Hero/Executive Summary: Immediate value prop & key metrics (Payback, Savings).
+        2. The Problem Visualization: Interactive "Peak Load" chart demonstrating the financial pain of current HVAC operations.
+        3. The Solution Explorer: Schematic interactive view of the "Charge/Discharge" cycle and modularity.
+        4. Financial Simulator: A calculator allowing investors to input square footage and rates to see ROI/Payback dynamically.
+        5. Market Map: highlighting the "Trifecta" states (CA, NY, TX) and their specific drivers.
+        Why? This structure moves from the "Hook" (Money) to the "Why" (Problem), "How" (Solution), and "Proof" (Calculator).
+    -->
+    <!-- Visualization & Content Choices:
+        1. Peak Load Chart: Area chart. Goal: Show the "head of the duck" (peak demand). Interaction: Toggle "With TES" vs "Without TES".
+        2. Financial Calculator: Input fields + Dynamic Bar Chart. Goal: Prove the 2-year payback. Interaction: Sliders for Demand Charge and Sq Ft.
+        3. Tech Schematic: Unicode/CSS diagram. Goal: Explain the retrofit process simply without SVG. Interaction: Hover to see flow direction.
+        4. Market Cards: Grid layout. Goal: Highlight regional urgency.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-slate-800 tracking-tight">PROJECT <span class="text-cyan-600">EQUINOX</span></span>
+                </div>
+                <div class="hidden sm:flex space-x-8 items-center">
+                    <button onclick="scrollToSection('problem')" class="text-sm font-medium text-slate-500 hover:text-cyan-600 transition-colors">The Problem</button>
+                    <button onclick="scrollToSection('solution')" class="text-sm font-medium text-slate-500 hover:text-cyan-600 transition-colors">Solution</button>
+                    <button onclick="scrollToSection('market')" class="text-sm font-medium text-slate-500 hover:text-cyan-600 transition-colors">Market</button>
+                    <button onclick="scrollToSection('financials')" class="bg-cyan-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-cyan-700 transition-colors shadow-sm">Simulate ROI</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mb-6">
+                        Ice Battery Technology 
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight mb-6">
+                        Decarbonizing HVAC with <br class="hidden sm:block" />
+                        <span class="text-cyan-600">Modular Thermal Batteries</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                        We target the "Peak Power Trap" in aging commercial infrastructure. By shifting 50% of HVAC load to off-peak hours, we deliver a <strong>2-year payback</strong> and grid stability for CA, NY, and TX.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="bg-slate-100 px-6 py-4 rounded-lg border border-slate-200">
+                            <div class="text-sm text-slate-500 uppercase tracking-wide">Target Savings</div>
+                            <div class="text-2xl font-bold text-slate-900">40-50%</div>
+                            <div class="text-xs text-slate-500">Peak Demand Reduction</div>
+                        </div>
+                        <div class="bg-slate-100 px-6 py-4 rounded-lg border border-slate-200">
+                            <div class="text-sm text-slate-500 uppercase tracking-wide">Payback</div>
+                            <div class="text-2xl font-bold text-slate-900">~1.7 Yrs</div>
+                            <div class="text-xs text-slate-500">Post-ITC Incentive</div>
+                        </div>
+                        <div class="bg-slate-100 px-6 py-4 rounded-lg border border-slate-200">
+                            <div class="text-sm text-slate-500 uppercase tracking-wide">Target Size</div>
+                            <div class="text-2xl font-bold text-slate-900">50k+ sqft</div>
+                            <div class="text-xs text-slate-500">Commercial/Industrial</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-cyan-500 rounded-full opacity-20 blur-2xl"></div>
+                    <h3 class="text-white font-medium mb-4">Live Concept: 24h Load Profile</h3>
+                    <div class="chart-container">
+                        <canvas id="heroChart"></canvas>
+                    </div>
+                    <div class="mt-4 flex justify-center space-x-6 text-sm">
+                        <div class="flex items-center text-slate-300">
+                            <span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span> Standard Load
+                        </div>
+                        <div class="flex items-center text-slate-300">
+                            <span class="w-3 h-3 bg-cyan-400 rounded-full mr-2"></span> With Modular TES
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- The Problem Section -->
+    <section id="problem" class="py-16 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
+            <h2 class="text-3xl font-bold text-slate-900 mb-4">The "Peak Power Trap"</h2>
+            <p class="text-slate-600 text-lg">
+                Commercial buildings are charged not just for what they use, but <em>when</em> they use it. 
+                Demand charges during peak hours (4 PM - 9 PM) can double a facility's energy bill.
+            </p>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600 text-2xl mb-4 font-bold">
+                    $
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Punitive Demand Charges</h3>
+                <p class="text-slate-600">
+                    In target markets (NYC, CA), demand rates exceed <strong>$30/kW</strong>. A single 15-minute spike in cooling can cost thousands.
+                </p>
+            </div>
+            <!-- Card 2 -->
+            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-2xl mb-4 font-bold">
+                    ⚠️
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">The "Duck Curve" Crisis</h3>
+                <p class="text-slate-600">
+                    Solar oversupply at noon and demand spikes at sunset create grid instability, leading to brownouts and dirty "peaker plant" usage.
+                </p>
+            </div>
+            <!-- Card 3 -->
+            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 text-2xl mb-4 font-bold">
+                    ⚙️
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Aging Infrastructure</h3>
+                <p class="text-slate-600">
+                    70% of commercial buildings were built before 2000. Full HVAC replacement is too costly ($1M+) and disruptive for most owners.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Solution: Interactive Schematic -->
+    <section id="solution" class="py-16 bg-white border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900 mb-6">Solution: The Modular Thermal Battery</h2>
+                    <p class="text-slate-600 mb-6">
+                        We don't replace the chiller. We optimize it. Our modular tanks freeze water at night (charging) and melt it during the day (discharging), providing cooling without running the compressor during peak pricing hours.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 font-bold text-xs mt-1">1</div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-slate-900">Modular Drop-In</h4>
+                                <p class="text-slate-500 text-sm">Standardized high-density polymer tanks (e.g., 8x8x8 ft) fit in parking lots, basements, or loading docks.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 font-bold text-xs mt-1">2</div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-slate-900">Intelligent Controls</h4>
+                                <p class="text-slate-500 text-sm">Parasitic control layer integrates with legacy BMS to predict weather and automate freeze/thaw cycles.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 font-bold text-xs mt-1">3</div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-slate-900">Partial Load Strategy</h4>
+                                <p class="text-slate-500 text-sm">We target only the "expensive 50%" of the load, minimizing tank footprint and maximizing ROI.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive State Visualizer -->
+                <div class="bg-slate-50 rounded-2xl border border-slate-200 p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-slate-700">System Operation State</h3>
+                        <div class="flex bg-slate-200 rounded-lg p-1">
+                            <button id="btn-night" class="px-4 py-1 rounded-md text-sm font-medium transition-all bg-white shadow-sm text-slate-800">Night (Charge)</button>
+                            <button id="btn-day" class="px-4 py-1 rounded-md text-sm font-medium transition-all text-slate-500 hover:text-slate-800">Peak (Discharge)</button>
+                        </div>
+                    </div>
+
+                    <!-- Schematic Diagram built with CSS/Grid -->
+                    <div class="relative h-64 border-2 border-dashed border-slate-300 rounded-lg bg-white flex items-center justify-center overflow-hidden">
+                        
+                        <!-- Grid Layout for Schematic -->
+                        <div class="grid grid-cols-3 gap-8 w-full px-8 items-center text-center">
+                            
+                            <!-- Chiller -->
+                            <div class="flex flex-col items-center z-10">
+                                <div id="chiller-icon" class="text-4xl mb-2 transition-all duration-500">❄️</div>
+                                <div class="font-bold text-slate-700">Existing Chiller</div>
+                                <div id="chiller-status" class="text-xs text-green-600 font-mono mt-1">RUNNING</div>
+                            </div>
+
+                            <!-- Flow Arrows -->
+                            <div class="flex flex-col items-center justify-center h-full">
+                                <div id="flow-arrow-top" class="text-2xl text-slate-300 transition-colors duration-300">➡</div>
+                                <div id="flow-arrow-bottom" class="text-2xl text-slate-300 transition-colors duration-300 transform rotate-180 mt-4">➡</div>
+                            </div>
+
+                            <!-- TES Tank -->
+                            <div class="flex flex-col items-center z-10">
+                                <div class="w-20 h-24 border-2 border-slate-400 rounded-lg relative bg-blue-50 overflow-hidden transition-all duration-1000" id="tank-visual">
+                                    <div id="tank-level" class="absolute bottom-0 left-0 w-full bg-cyan-300 transition-all duration-1000" style="height: 0%;"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center text-2xl z-20">🔋</div>
+                                </div>
+                                <div class="font-bold text-slate-700 mt-2">Modular TES</div>
+                                <div id="battery-status" class="text-xs text-blue-600 font-mono mt-1">CHARGING...</div>
+                            </div>
+                        </div>
+
+                        <!-- Building overlay context -->
+                        <div class="absolute top-2 left-4 text-xs text-slate-400">Utility Grid Power</div>
+                        <div class="absolute top-2 right-4 text-xs text-slate-400">Building Cooling Loop</div>
+
+                    </div>
+                    <p id="state-desc" class="mt-4 text-sm text-slate-600 text-center bg-blue-50 p-3 rounded border border-blue-100">
+                        <strong>Night Mode (10 PM - 6 AM):</strong> Electricity is cheap ($0.12/kWh). Chiller runs at max efficiency to freeze the modular tanks. No demand charges.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Financial Simulator -->
+    <section id="financials" class="py-16 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Financial Simulation: The 2-Year Payback</h2>
+                <p class="text-slate-400">Adjust the parameters to see how Modular TES economics work for a typical facility.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Controls -->
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-xl font-semibold mb-6 text-cyan-400">Facility Parameters</h3>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm text-slate-400 mb-2">Building Size (sq ft)</label>
+                        <input type="range" id="input-sqft" min="50000" max="200000" step="10000" value="100000" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-cyan-500">
+                        <div class="flex justify-between text-xs text-slate-500 mt-2">
+                            <span>50k</span>
+                            <span id="val-sqft" class="text-white font-mono">100,000</span>
+                            <span>200k</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm text-slate-400 mb-2">Demand Charge Rate ($/kW)</label>
+                        <input type="range" id="input-rate" min="15" max="50" step="1" value="35" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-cyan-500">
+                        <div class="flex justify-between text-xs text-slate-500 mt-2">
+                            <span>$15 (Avg)</span>
+                            <span id="val-rate" class="text-white font-mono">$35.00</span>
+                            <span>$50 (NYC/CA)</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm text-slate-400 mb-2">System Cost (Estimated)</label>
+                        <div class="text-2xl font-bold text-white font-mono" id="val-cost">$150,000</div>
+                        <div class="text-xs text-green-400 mt-1">Includes 30% ITC deduction</div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col">
+                    <h3 class="text-xl font-semibold mb-6 text-cyan-400">Projected Economics</h3>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-slate-700 p-4 rounded-lg">
+                            <div class="text-xs text-slate-400 mb-1">Monthly Savings</div>
+                            <div class="text-xl font-bold text-green-400" id="res-monthly">$4,500</div>
+                        </div>
+                        <div class="bg-slate-700 p-4 rounded-lg">
+                            <div class="text-xs text-slate-400 mb-1">Annual Savings</div>
+                            <div class="text-xl font-bold text-green-400" id="res-annual">$54,000</div>
+                        </div>
+                        <div class="bg-slate-700 p-4 rounded-lg ring-2 ring-cyan-500 ring-opacity-50">
+                            <div class="text-xs text-cyan-300 mb-1">ROI (Year 1)</div>
+                            <div class="text-xl font-bold text-white" id="res-roi">60%</div>
+                        </div>
+                        <div class="bg-slate-700 p-4 rounded-lg">
+                            <div class="text-xs text-slate-400 mb-1">Payback Period</div>
+                            <div class="text-xl font-bold text-white" id="res-payback">1.7 Yrs</div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow chart-container">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Map Section -->
+    <section id="market" class="py-16 bg-white border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">Target Markets: The "Trifecta of Urgency"</h2>
+                <p class="text-slate-600">Focusing on regions where grid stress and policy meet high costs.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 hover:border-cyan-500 transition-colors cursor-default group">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">California</h3>
+                        <span class="text-2xl">☀️</span>
+                    </div>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Highest Rates:</strong> Demand charges >$35/kW.</li>
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Title 24:</strong> Aggressive energy code mandates.</li>
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Duck Curve:</strong> Massive solar penetration needs shifting.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 hover:border-cyan-500 transition-colors cursor-default group">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">New York</h3>
+                        <span class="text-2xl">🏙️</span>
+                    </div>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Local Law 97:</strong> Massive fines for building carbon.</li>
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>ConEd Incentives:</strong> Strong rebates for thermal storage.</li>
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Aging Stock:</strong> High density of older, inefficient buildings.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 hover:border-cyan-500 transition-colors cursor-default group">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">Texas</h3>
+                        <span class="text-2xl">⚡</span>
+                    </div>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Grid Volatility:</strong> ERCOT instability drives demand for resilience.</li>
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Heat Load:</strong> Extreme cooling degree days.</li>
+                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Space:</strong> Availability of land for modular tank arrays.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <span class="text-xl font-bold text-white tracking-tight">PROJECT <span class="text-cyan-500">EQUINOX</span></span>
+            <p class="mt-4 text-slate-400 text-sm">
+                Icebreaker Energy &copy; 2025. <br>
+                Empowering the grid, one chiller at a time.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Logic and Charts -->
+    <script>
+        // --- Navigation Logic ---
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- Chart 1: Hero Load Profile (Chart.js) ---
+        const heroCtx = document.getElementById('heroChart').getContext('2d');
+        
+        // Data generation: Simulate a 24h load curve
+        const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
+        const baseLoad = [100, 90, 80, 80, 85, 100, 150, 200, 250, 300, 350, 380, 400, 410, 420, 410, 400, 350, 300, 250, 200, 150, 120, 110];
+        
+        // TES Load: Higher at night (charging), lower at peak (discharging)
+        const tesLoad = baseLoad.map((load, i) => {
+            if (i >= 22 || i <= 6) return load + 80; // Charging at night
+            if (i >= 14 && i <= 20) return load - 180; // Discharging during peak (2pm-8pm)
+            return load;
+        });
+
+        const heroChart = new Chart(heroCtx, {
+            type: 'line',
+            data: {
+                labels: hours,
+                datasets: [
+                    {
+                        label: 'Standard Building Load (kW)',
+                        data: baseLoad,
+                        borderColor: 'rgba(248, 113, 113, 1)', // Red
+                        backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'With Modular TES (kW)',
+                        data: tesLoad,
+                        borderColor: 'rgba(34, 211, 238, 1)', // Cyan
+                        backgroundColor: 'rgba(34, 211, 238, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: { grid: { display: false, color: '#334155' }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // --- Schematic Interaction Logic ---
+        const btnNight = document.getElementById('btn-night');
+        const btnDay = document.getElementById('btn-day');
+        const tankLevel = document.getElementById('tank-level');
+        const tankVisual = document.getElementById('tank-visual');
+        const statusDesc = document.getElementById('state-desc');
+        const chillerStatus = document.getElementById('chiller-status');
+        const batteryStatus = document.getElementById('battery-status');
+        const topArrow = document.getElementById('flow-arrow-top');
+        const bottomArrow = document.getElementById('flow-arrow-bottom');
+
+        function setNightMode() {
+            // UI State
+            btnNight.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
+            btnNight.classList.remove('text-slate-500');
+            btnDay.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
+            btnDay.classList.add('text-slate-500');
+
+            // Visual State
+            tankLevel.style.height = '100%'; // Full
+            tankLevel.style.backgroundColor = '#67e8f9'; // Cyan (Ice)
+            tankVisual.style.borderColor = '#22d3ee';
+            
+            chillerStatus.textContent = 'RUNNING (HIGH EFFICIENCY)';
+            chillerStatus.className = 'text-xs text-green-600 font-mono mt-1';
+            
+            batteryStatus.textContent = 'CHARGING (FREEZING)';
+            batteryStatus.className = 'text-xs text-blue-600 font-mono mt-1';
+
+            topArrow.style.color = '#3b82f6'; // Blue flow
+            bottomArrow.style.color = '#3b82f6';
+
+            statusDesc.innerHTML = '<strong>Night Mode (10 PM - 6 AM):</strong> Electricity is cheap ($0.12/kWh). Chiller runs at max efficiency to freeze the modular tanks. No demand charges.';
+        }
+
+        function setDayMode() {
+            // UI State
+            btnDay.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
+            btnDay.classList.remove('text-slate-500');
+            btnNight.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
+            btnNight.classList.add('text-slate-500');
+
+            // Visual State
+            tankLevel.style.height = '20%'; // Depleting
+            tankLevel.style.backgroundColor = '#bae6fd'; // Watery
+            tankVisual.style.borderColor = '#fb923c'; // Orange tint for heat
+            
+            chillerStatus.textContent = 'IDLE / LOW LOAD';
+            chillerStatus.className = 'text-xs text-slate-400 font-mono mt-1';
+            
+            batteryStatus.textContent = 'DISCHARGING (MELTING)';
+            batteryStatus.className = 'text-xs text-orange-600 font-mono mt-1';
+
+            topArrow.style.color = '#fb923c'; // Orange flow
+            bottomArrow.style.color = '#fb923c';
+
+            statusDesc.innerHTML = '<strong>Peak Mode (4 PM - 9 PM):</strong> Grid rates skyrocket. Chiller throttles down. Ice melts to provide cooling. <strong>Zero Demand Charges incurred.</strong>';
+        }
+
+        btnNight.addEventListener('click', setNightMode);
+        btnDay.addEventListener('click', setDayMode);
+
+        // Init Default
+        setNightMode();
+
+
+        // --- Financial Simulator Logic & Chart ---
+        const sqftInput = document.getElementById('input-sqft');
+        const rateInput = document.getElementById('input-rate');
+        
+        const valSqft = document.getElementById('val-sqft');
+        const valRate = document.getElementById('val-rate');
+        const valCost = document.getElementById('val-cost');
+        
+        const resMonthly = document.getElementById('res-monthly');
+        const resAnnual = document.getElementById('res-annual');
+        const resRoi = document.getElementById('res-roi');
+        const resPayback = document.getElementById('res-payback');
+
+        const financeCtx = document.getElementById('financeChart').getContext('2d');
+        
+        const financeChart = new Chart(financeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                datasets: [
+                    {
+                        label: 'Cumulative Cash Flow ($)',
+                        data: [-90000, -36000, 18000, 72000, 126000], // Placeholders
+                        backgroundColor: (ctx) => {
+                            const val = ctx.raw;
+                            return val < 0 ? 'rgba(248, 113, 113, 0.5)' : 'rgba(34, 211, 238, 0.5)';
+                        },
+                        borderColor: (ctx) => {
+                            const val = ctx.raw;
+                            return val < 0 ? 'rgba(248, 113, 113, 1)' : 'rgba(34, 211, 238, 1)';
+                        },
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: { color: '#334155' },
+                        ticks: { color: '#94a3b8', callback: (value) => '$' + value / 1000 + 'k' }
+                    },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        function updateEconomics() {
+            // Inputs
+            const sqft = parseInt(sqftInput.value);
+            const rate = parseInt(rateInput.value);
+
+            // Assumptions
+            const loadFactor = 0.002; // kW per sqft peak load estimate (approx 200 tons for 100k sqft)
+            const peakLoad = sqft * loadFactor; // 200kW for 100k sqft
+            const shiftPercentage = 0.50; // We shift 50% of load
+            const shiftedLoad = peakLoad * shiftPercentage; // 100kW shifted
+
+            const arbitrageSavings = 1000 * (sqft / 100000); // Rough arbitrage estimate scaling
+            const demandSavingsMonthly = shiftedLoad * rate;
+            const totalMonthlySavings = demandSavingsMonthly + arbitrageSavings;
+            const annualSavings = totalMonthlySavings * 12;
+
+            // CapEx Model (Linear scaling for simplicity of demo)
+            // Base $150k for 100k sqft system, ITC 30%
+            const rawCost = 150000 * (sqft / 100000);
+            const netCost = rawCost * 0.7; // After 30% ITC
+
+            const paybackYears = netCost / annualSavings;
+            const roiYear1 = (annualSavings / netCost) * 100;
+
+            // Update UI Text
+            valSqft.innerText = sqft.toLocaleString();
+            valRate.innerText = '$' + rate.toFixed(2);
+            valCost.innerText = '$' + Math.round(netCost).toLocaleString();
+
+            resMonthly.innerText = '$' + Math.round(totalMonthlySavings).toLocaleString();
+            resAnnual.innerText = '$' + Math.round(annualSavings).toLocaleString();
+            resRoi.innerText = Math.round(roiYear1) + '%';
+            resPayback.innerText = paybackYears.toFixed(1) + ' Yrs';
+
+            // Update Chart Data (Cumulative Cash Flow)
+            // Year 0 = -NetCost
+            // Year N = Previous + AnnualSavings
+            const cf = [];
+            let current = -netCost;
+            for(let i=1; i<=5; i++) {
+                current += annualSavings;
+                cf.push(current);
+            }
+            
+            financeChart.data.datasets[0].data = cf;
+            financeChart.update();
+        }
+
+        // Listeners
+        sqftInput.addEventListener('input', updateEconomics);
+        rateInput.addEventListener('input', updateEconomics);
+
+        // Init Calculation
+        updateEconomics();
+
+    </script>
+</body>
+</html>
