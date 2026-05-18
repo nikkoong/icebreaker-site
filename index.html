@@ -3,621 +3,1443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Equinox | Modular TES Investor Dashboard</title>
+    <title>Icebreaker Energy | Ice Batteries For Commercial Cooling</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 300px;
-            margin: 0 auto;
+        :root {
+            --bg: #040507;
+            --panel: #0b0e13;
+            --panel-2: #11151d;
+            --panel-3: #151b24;
+            --line: rgba(255, 255, 255, 0.09);
+            --line-strong: rgba(255, 255, 255, 0.16);
+            --text: #f5f7fb;
+            --muted: #99a3b5;
+            --muted-2: #70798a;
+            --ice: #dff7ff;
+            --cyan: #67e8f9;
+            --cyan-strong: #22d3ee;
+            --blue: #60a5fa;
+            --orange: #fb923c;
+            --red: #f87171;
+            --radius: 28px;
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(103, 232, 249, 0.08), transparent 32%),
+                radial-gradient(circle at 80% 10%, rgba(96, 165, 250, 0.08), transparent 28%),
+                var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 72px 72px;
+            opacity: 0.35;
+            pointer-events: none;
+            mask-image: radial-gradient(circle at center, black 45%, transparent 90%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .container {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section {
+            padding: clamp(72px, 9vw, 124px) 0;
+            border-top: 1px solid var(--line);
+            position: relative;
+        }
+
+        .section-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .section-kicker::before {
+            content: "";
+            width: 38px;
+            height: 1px;
+            background: var(--line-strong);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.05em;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(18px);
+            background: rgba(4, 5, 7, 0.72);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .topbar-inner {
+            min-height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+
+        .brand-mark {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+        }
+
+        .brand-sub {
+            font-size: 10px;
+            color: var(--muted-2);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-links button,
+        .button {
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 11px 16px;
+            cursor: pointer;
+        }
+
+        .nav-links button {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 160px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .button.primary {
+            background: linear-gradient(135deg, rgba(103, 232, 249, 0.25), rgba(96, 165, 250, 0.14));
+            border-color: rgba(103, 232, 249, 0.4);
+        }
+
+        .hero {
+            min-height: calc(100svh - 74px);
+            display: flex;
+            align-items: center;
+            border-top: none;
+            padding-top: clamp(28px, 5vw, 58px);
+        }
+
+        .hero-grid,
+        .story-grid,
+        .economics-grid,
+        .network-grid,
+        .closing-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+            gap: clamp(24px, 4vw, 48px);
+            align-items: start;
+        }
+
+        .hero-title {
+            font-size: clamp(4rem, 11vw, 8.4rem);
+            line-height: 0.86;
+            text-transform: uppercase;
+            max-width: 8.2ch;
+        }
+
+        .hero-title span,
+        .accent {
+            color: var(--ice);
+        }
+
+        .hero-sub,
+        .section-copy,
+        .cta-copy {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .hero-sub {
+            max-width: 570px;
+            margin-top: 24px;
+            font-size: clamp(1rem, 1.6vw, 1.2rem);
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        .metric-strip,
+        .fact-grid,
+        .result-grid,
+        .impact-grid,
+        .summary-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .metric-strip {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 32px;
+        }
+
+        .metric-card,
+        .panel,
+        .bill-card,
+        .result-card,
+        .impact-card,
+        .cta-panel,
+        .summary-card,
+        .diagram-panel,
+        .simple-card {
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+        }
+
+        .metric-card {
+            padding: 16px 18px;
+        }
+
+        .metric-card .label,
+        .eyebrow,
+        .panel-label,
+        .range-name,
+        .micro-note {
+            color: var(--muted-2);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .metric-card .value,
+        .summary-value,
+        .result-card strong,
+        .bill-big,
+        .impact-card strong,
+        .summary-card strong {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .metric-card .value {
+            margin-top: 8px;
+            font-size: clamp(1.55rem, 3vw, 2.2rem);
+            line-height: 1;
+        }
+
+        .metric-card .meta {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .hero-stage,
+        .diagram-panel,
+        .network-stage {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-stage {
+            padding: 28px;
+            border-radius: 32px;
+            border: 1px solid var(--line);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+                var(--panel);
+        }
+
+        .hero-stage::before,
+        .network-stage::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 54px 54px;
+            opacity: 0.28;
+            pointer-events: none;
+        }
+
+        .stage-topline,
+        .panel-top,
+        .network-topline,
+        .footer-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .panel-title,
+        .section-title,
+        .cta-title {
+            text-transform: uppercase;
+        }
+
+        .panel-title {
+            font-size: 0.92rem;
+            letter-spacing: 0.14em;
+        }
+
+        .hero-steps,
+        .vpp-flow,
+        .bill-compare {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .hero-steps,
+        .vpp-flow {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .hero-step,
+        .vpp-step,
+        .bill-stack {
+            padding: 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        }
+
+        .hero-step small,
+        .vpp-step small,
+        .bill-line span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .hero-step strong,
+        .vpp-step strong,
+        .bill-line strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .hero-step p,
+        .vpp-step p,
+        .impact-card p,
+        .summary-card p,
+        .bill-card p,
+        .simple-card p {
+            margin-top: 8px;
+            color: var(--muted);
+            line-height: 1.45;
+            font-size: 0.94rem;
+        }
+
+        .hero-step {
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .step-visual {
+            margin-top: 16px;
+            min-height: 92px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(8, 12, 18, 0.9), rgba(12, 17, 25, 0.98));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-visual::before,
+        .step-visual::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+        }
+
+        .step-night::before {
+            inset: 18px 18px auto 18px;
+            height: 14px;
+            background: linear-gradient(90deg, rgba(96, 165, 250, 0.2), rgba(96, 165, 250, 0.9));
+        }
+
+        .step-night::after {
+            right: 18px;
+            bottom: 18px;
+            width: 62px;
+            height: 62px;
+            background: radial-gradient(circle at 35% 35%, rgba(103, 232, 249, 0.95), rgba(34, 211, 238, 0.2));
+        }
+
+        .step-afternoon::before {
+            left: 18px;
+            top: 20px;
+            width: 84px;
+            height: 52px;
+            background: linear-gradient(180deg, rgba(103, 232, 249, 0.9), rgba(96, 165, 250, 0.38));
+        }
+
+        .step-afternoon::after {
+            right: 18px;
+            top: 28px;
+            width: 74px;
+            height: 12px;
+            background: linear-gradient(90deg, rgba(248, 113, 113, 0.8), rgba(248, 113, 113, 0.12));
+        }
+
+        .step-bill::before {
+            left: 18px;
+            bottom: 18px;
+            width: 58px;
+            height: 42px;
+            background: rgba(248, 113, 113, 0.45);
+        }
+
+        .step-bill::after {
+            left: 88px;
+            bottom: 18px;
+            width: 58px;
+            height: 26px;
+            background: rgba(103, 232, 249, 0.5);
+        }
+
+        .diagram-note {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .simple-card {
+            padding: 14px 16px;
+        }
+
+        .simple-card strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 1.12rem;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 6vw, 4.8rem);
+            line-height: 0.9;
+            max-width: 8.6ch;
+        }
+
+        .story-grid {
+            align-items: stretch;
+        }
+
+        .bill-explainer {
+            display: grid;
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .bill-card {
+            padding: 18px 20px;
+        }
+
+        .bill-big {
+            margin-top: 10px;
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .bullet-rail {
+            display: grid;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        .rail-item {
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr);
+            gap: 14px;
+            align-items: start;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .rail-item:last-child {
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .rail-tag {
+            color: var(--cyan);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .rail-text strong {
+            display: block;
+            font-size: 0.98rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .rail-text span {
+            display: block;
+            margin-top: 6px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .diagram-panel {
+            padding: 24px;
+        }
+
+        .process-flow {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .process-step {
+            position: relative;
+            padding: 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .process-step::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -14px;
+            width: 28px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .process-step strong {
+            display: block;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .process-step p {
+            margin-top: 8px;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 0.94rem;
+        }
+
+        .impact-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 16px;
+        }
+
+        .impact-card {
+            padding: 18px;
+        }
+
+        .impact-card strong {
+            display: block;
+            margin-top: 10px;
+            font-size: 1.2rem;
+            line-height: 1.05;
+            text-transform: uppercase;
+        }
+
+        .panel,
+        .results-panel,
+        .network-stage,
+        .cta-panel {
+            padding: 24px;
+        }
+
+        .control-grid {
+            display: grid;
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .range-block {
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+        }
+
+        .range-label-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 12px;
+        }
+
+        .range-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--cyan-strong);
+            cursor: pointer;
+        }
+
+        .range-ends,
+        .assumption-list {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--muted-2);
+            font-size: 12px;
+        }
+
+        .range-ends {
+            margin-top: 8px;
+        }
+
+        .control-summary {
+            display: grid;
+            gap: 10px;
+            margin-top: 22px;
+            padding: 18px 20px;
+            border-radius: 22px;
+            border: 1px solid rgba(103, 232, 249, 0.14);
+            background: linear-gradient(180deg, rgba(103, 232, 249, 0.08), rgba(96, 165, 250, 0.02));
+        }
+
+        .summary-value {
+            font-size: clamp(1.8rem, 4vw, 3.1rem);
+            line-height: 0.95;
+        }
+
+        .results-panel {
+            min-height: 100%;
+        }
+
+        .result-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            margin-top: 22px;
+        }
+
+        .result-card {
+            padding: 18px;
+        }
+
+        .result-card strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 1.38rem;
+            line-height: 1;
+        }
+
+        .result-card.highlight {
+            border-color: rgba(103, 232, 249, 0.32);
+            background: linear-gradient(180deg, rgba(103, 232, 249, 0.08), rgba(96, 165, 250, 0.03));
+        }
+
+        .bill-compare {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: stretch;
+        }
+
+        .bill-stack {
+            min-height: 100%;
+        }
+
+        .bill-stack.highlight {
+            border-color: rgba(103, 232, 249, 0.28);
+            background: linear-gradient(180deg, rgba(103, 232, 249, 0.1), rgba(96, 165, 250, 0.03));
+        }
+
+        .bill-total {
+            margin-top: 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.8rem, 7vw, 4.8rem);
+            line-height: 0.9;
+            letter-spacing: -0.06em;
+        }
+
+        .bill-detail-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .bill-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .bill-delta {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+        }
+
+        .bill-delta strong {
+            display: block;
+            margin-top: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            color: var(--ice);
+        }
+
+        .vpp-flow {
+            margin-top: 26px;
+        }
+
+        .vpp-step {
+            min-height: 220px;
+        }
+
+        .vpp-proof {
+            margin-top: 22px;
+            padding: 20px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .vpp-proof strong {
+            display: block;
+            margin-top: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .vpp-proof p {
+            margin-top: 8px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .summary-list {
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            padding: 18px;
+        }
+
+        .summary-card strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 1.16rem;
+            text-transform: uppercase;
+        }
+
+        .cta-panel {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background:
+                radial-gradient(circle at top right, rgba(103, 232, 249, 0.16), transparent 30%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+        }
+
+        .cta-title {
+            font-size: clamp(2.4rem, 5vw, 4.2rem);
+            line-height: 0.92;
+            max-width: 10ch;
+        }
+
+        .cta-copy {
+            max-width: 560px;
+            margin-top: 18px;
+        }
+
+        .footer-line {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+            color: var(--muted-2);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 1080px) {
+            .hero-grid,
+            .story-grid,
+            .economics-grid,
+            .network-grid,
+            .closing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 820px) {
+            .topbar-inner,
+            .stage-topline,
+            .panel-top,
+            .network-topline,
+            .footer-line {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-inner {
+                min-height: unset;
+                padding: 14px 0;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .hero {
+                min-height: auto;
+                padding-top: 24px;
+            }
+
+            .metric-strip,
+            .hero-steps,
+            .diagram-note,
+            .process-flow,
+            .impact-grid,
+            .result-grid,
+            .summary-list,
+            .bill-compare,
+            .vpp-flow {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stage,
+            .diagram-panel,
+            .panel,
+            .results-panel,
+            .network-stage,
+            .cta-panel {
+                padding: 20px;
+            }
+
+            .process-step::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                width: min(100% - 20px, 1180px);
+            }
+
+            .section {
+                padding: 68px 0;
+            }
+
+            .hero-title,
+            .section-title,
+            .cta-title {
+                letter-spacing: -0.07em;
+            }
+
+            .hero-title {
+                font-size: clamp(3.2rem, 18vw, 5rem);
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .hero-actions {
+                width: 100%;
             }
         }
     </style>
-    <!-- Chosen Palette: "Thermal Balance" - Slate/Zinc base (neutral) with Ice Blue (cooling/tech) and Warm Orange (peak/alert) accents. -->
-    <!-- Application Structure Plan:
-        1. Hero/Executive Summary: Immediate value prop & key metrics (Payback, Savings).
-        2. The Problem Visualization: Interactive "Peak Load" chart demonstrating the financial pain of current HVAC operations.
-        3. The Solution Explorer: Schematic interactive view of the "Charge/Discharge" cycle and modularity.
-        4. Financial Simulator: A calculator allowing investors to input square footage and rates to see ROI/Payback dynamically.
-        5. Market Map: highlighting the "Trifecta" states (CA, NY, TX) and their specific drivers.
-        Why? This structure moves from the "Hook" (Money) to the "Why" (Problem), "How" (Solution), and "Proof" (Calculator).
-    -->
-    <!-- Visualization & Content Choices:
-        1. Peak Load Chart: Area chart. Goal: Show the "head of the duck" (peak demand). Interaction: Toggle "With TES" vs "Without TES".
-        2. Financial Calculator: Input fields + Dynamic Bar Chart. Goal: Prove the 2-year payback. Interaction: Sliders for Demand Charge and Sq Ft.
-        3. Tech Schematic: Unicode/CSS diagram. Goal: Explain the retrofit process simply without SVG. Interaction: Hover to see flow direction.
-        4. Market Cards: Grid layout. Goal: Highlight regional urgency.
-        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
-    -->
 </head>
-<body class="bg-slate-50 text-slate-800">
-
-    <!-- Navigation -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-2xl font-bold text-slate-800 tracking-tight">PROJECT <span class="text-cyan-600">EQUINOX</span></span>
-                </div>
-                <div class="hidden sm:flex space-x-8 items-center">
-                    <button onclick="scrollToSection('problem')" class="text-sm font-medium text-slate-500 hover:text-cyan-600 transition-colors">The Problem</button>
-                    <button onclick="scrollToSection('solution')" class="text-sm font-medium text-slate-500 hover:text-cyan-600 transition-colors">Solution</button>
-                    <button onclick="scrollToSection('market')" class="text-sm font-medium text-slate-500 hover:text-cyan-600 transition-colors">Market</button>
-                    <button onclick="scrollToSection('financials')" class="bg-cyan-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-cyan-700 transition-colors shadow-sm">Simulate ROI</button>
-                </div>
+<body>
+    <nav class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <span class="brand-mark">ICEBREAKER</span>
+                <span class="brand-sub">Thermal storage for commercial real estate</span>
+            </div>
+            <div class="nav-links">
+                <button onclick="scrollToSection('overview')">Overview</button>
+                <button onclick="scrollToSection('solution')">How It Works</button>
+                <button onclick="scrollToSection('financials')">Savings</button>
+                <button onclick="scrollToSection('network')">Thermal VPP</button>
+                <button onclick="scrollToSection('contact')">Contact</button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mb-6">
-                        Ice Battery Technology 
-                    </div>
-                    <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight mb-6">
-                        Decarbonizing HVAC with <br class="hidden sm:block" />
-                        <span class="text-cyan-600">Modular Thermal Batteries</span>
-                    </h1>
-                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
-                        We target the "Peak Power Trap" in aging commercial infrastructure. By shifting 50% of HVAC load to off-peak hours, we deliver a <strong>2-year payback</strong> and grid stability for CA, NY, and TX.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="bg-slate-100 px-6 py-4 rounded-lg border border-slate-200">
-                            <div class="text-sm text-slate-500 uppercase tracking-wide">Target Savings</div>
-                            <div class="text-2xl font-bold text-slate-900">40-50%</div>
-                            <div class="text-xs text-slate-500">Peak Demand Reduction</div>
-                        </div>
-                        <div class="bg-slate-100 px-6 py-4 rounded-lg border border-slate-200">
-                            <div class="text-sm text-slate-500 uppercase tracking-wide">Payback</div>
-                            <div class="text-2xl font-bold text-slate-900">~1.7 Yrs</div>
-                            <div class="text-xs text-slate-500">Post-ITC Incentive</div>
-                        </div>
-                        <div class="bg-slate-100 px-6 py-4 rounded-lg border border-slate-200">
-                            <div class="text-sm text-slate-500 uppercase tracking-wide">Target Size</div>
-                            <div class="text-2xl font-bold text-slate-900">50k+ sqft</div>
-                            <div class="text-xs text-slate-500">Commercial/Industrial</div>
-                        </div>
-                    </div>
+    <header id="overview" class="section hero">
+        <div class="container hero-grid">
+            <div>
+                <div class="section-kicker">Commercial Cooling</div>
+                <h1 class="hero-title">Ice Batteries <span>For Peak Cooling</span></h1>
+                <p class="hero-sub">
+                    Icebreaker Energy builds and installs thermal ice batteries in commercial buildings. We freeze water at night, melt ice when it's hot, and cut cooling bills by avoiding expensive cooling during the hottest hours.
+                </p>
+                <div class="hero-actions">
+                    <button class="button primary" onclick="scrollToSection('solution')">See How It Works</button>
+                    <button class="button" onclick="scrollToSection('financials')">Model Savings</button>
                 </div>
-                <div class="bg-slate-900 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-cyan-500 rounded-full opacity-20 blur-2xl"></div>
-                    <h3 class="text-white font-medium mb-4">Live Concept: 24h Load Profile</h3>
-                    <div class="chart-container">
-                        <canvas id="heroChart"></canvas>
+                <!-- <div class="metric-strip">
+                    <div class="metric-card">
+                        <div class="label">SHIFT PEAK LOAD</div>
+                        <div class="value">180 kW</div>
+                        <div class="meta">Move cooling energy demand away from mid-afternoon peak and toward evening hours.</div>
                     </div>
-                    <div class="mt-4 flex justify-center space-x-6 text-sm">
-                        <div class="flex items-center text-slate-300">
-                            <span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span> Standard Load
-                        </div>
-                        <div class="flex items-center text-slate-300">
-                            <span class="w-3 h-3 bg-cyan-400 rounded-full mr-2"></span> With Modular TES
-                        </div>
+                    <div class="metric-card">
+                        <div class="label">SAVE MONEY</div>
+                        <div class="value">28%+</div>
+                        <div class="meta">Cooling-bill reduction in buildings with significant demand charges (CA, NY, TX, NC).</div>
                     </div>
+                    <div class="metric-card">
+                        <div class="label">ELIGIBLE BUILDINGS</div>
+                        <div class="value">50k+ sqft</div>
+                        <div class="meta">Commercial properties with high cooling peaks and existing water-cooled chillers.</div>
+                    </div>
+                </div> -->
+            </div>
+
+            <div class="hero-stage">
+                <div class="stage-topline">
+                    <div>
+                        <div class="panel-title">Make Ice At Night. Melt Ice to cool the building in the afternoon.</div>
+                    </div>
+                    
+                </div>
+
+                <div class="hero-steps">
+                    <div class="hero-step">
+                        <div>
+                            <small>Night</small>
+                            <strong>Charge storage</strong>
+                            <p>Run chiller overnight to freeze water during off-peak hours.</p>
+                        </div>
+                        <div class="step-visual step-night"></div>
+                    </div>
+                    <div class="hero-step">
+                        <div>
+                            <small>Afternoon</small>
+                            <strong>Shift peak load</strong>
+                            <p>Lower hottest-hour chiller load by melting stored ice. Passively power HVAC system without losing comfort.</p>
+                        </div>
+                        <div class="step-visual step-afternoon"></div>
+                    </div>
+                    <div class="hero-step">
+                        <div>
+                            <small>Lower Bills</small>
+                            <strong>Cut peak-driven utility costs</strong>
+                            <p>Lower the expensive cooling spikes that drive demand charges. Save more money with cheaper night-time energy.</p>
+                        </div>
+                        <div class="step-visual step-bill"></div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- The Problem Section -->
-    <section id="problem" class="py-16 bg-slate-50 border-t border-slate-200">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-            <h2 class="text-3xl font-bold text-slate-900 mb-4">The "Peak Power Trap"</h2>
-            <p class="text-slate-600 text-lg">
-                Commercial buildings are charged not just for what they use, but <em>when</em> they use it. 
-                Demand charges during peak hours (4 PM - 9 PM) can double a facility's energy bill.
-            </p>
-        </div>
+    <section id="solution" class="section">
+        <div class="container story-grid">
+            <div>
+                
+                <h2 class="section-title">High bills from peak power</h2>
+                <p class="section-copy">
+                    Commercial electric bills often have two parts: total energy used and the highest power draw during the billing cycle. Cooling spikes on hot afternoons increase both.
+                </p>
 
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Card 1 -->
-            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600 text-2xl mb-4 font-bold">
-                    $
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">Punitive Demand Charges</h3>
-                <p class="text-slate-600">
-                    In target markets (NYC, CA), demand rates exceed <strong>$30/kW</strong>. A single 15-minute spike in cooling can cost thousands.
-                </p>
-            </div>
-            <!-- Card 2 -->
-            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-2xl mb-4 font-bold">
-                    ⚠️
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">The "Duck Curve" Crisis</h3>
-                <p class="text-slate-600">
-                    Solar oversupply at noon and demand spikes at sunset create grid instability, leading to brownouts and dirty "peaker plant" usage.
-                </p>
-            </div>
-            <!-- Card 3 -->
-            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 text-2xl mb-4 font-bold">
-                    ⚙️
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">Aging Infrastructure</h3>
-                <p class="text-slate-600">
-                    70% of commercial buildings were built before 2000. Full HVAC replacement is too costly ($1M+) and disruptive for most owners.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- The Solution: Interactive Schematic -->
-    <section id="solution" class="py-16 bg-white border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h2 class="text-3xl font-bold text-slate-900 mb-6">Solution: The Modular Thermal Battery</h2>
-                    <p class="text-slate-600 mb-6">
-                        We don't replace the chiller. We optimize it. Our modular tanks freeze water at night (charging) and melt it during the day (discharging), providing cooling without running the compressor during peak pricing hours.
-                    </p>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 font-bold text-xs mt-1">1</div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-medium text-slate-900">Modular Drop-In</h4>
-                                <p class="text-slate-500 text-sm">Standardized high-density polymer tanks (e.g., 8x8x8 ft) fit in parking lots, basements, or loading docks.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 font-bold text-xs mt-1">2</div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-medium text-slate-900">Intelligent Controls</h4>
-                                <p class="text-slate-500 text-sm">Parasitic control layer integrates with legacy BMS to predict weather and automate freeze/thaw cycles.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600 font-bold text-xs mt-1">3</div>
-                            <div class="ml-4">
-                                <h4 class="text-lg font-medium text-slate-900">Partial Load Strategy</h4>
-                                <p class="text-slate-500 text-sm">We target only the "expensive 50%" of the load, minimizing tank footprint and maximizing ROI.</p>
-                            </div>
-                        </div>
+                <div class="bill-explainer">
+                    <div class="bill-card">
+                        <div class="eyebrow">Energy charge</div>
+                        <div class="bill-big">kWh used</div>
+                        <p>You pay for the electricity consumed across the month.</p>
+                    </div>
+                    <div class="bill-card">
+                        <div class="eyebrow">Demand charge</div>
+                        <div class="bill-big">Highest kW spike</div>
+                        <p>You also pay for the single biggest power draw over any 15-minute period.</p>
+                    </div>
+                    <div class="bill-card">
+                        <div class="eyebrow">What Icebreaker does</div>
+                        <div class="bill-big">Move cooling earlier</div>
+                        <p>Store cold at night, then use stored ice during the hottest hours so the cooling peak is lower.</p>
                     </div>
                 </div>
 
-                <!-- Interactive State Visualizer -->
-                <div class="bg-slate-50 rounded-2xl border border-slate-200 p-8">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-slate-700">System Operation State</h3>
-                        <div class="flex bg-slate-200 rounded-lg p-1">
-                            <button id="btn-night" class="px-4 py-1 rounded-md text-sm font-medium transition-all bg-white shadow-sm text-slate-800">Night (Charge)</button>
-                            <button id="btn-day" class="px-4 py-1 rounded-md text-sm font-medium transition-all text-slate-500 hover:text-slate-800">Peak (Discharge)</button>
-                        </div>
+            </div>
+
+            <div class="diagram-panel">
+                <div class="panel-top">
+                    <div>
+                        <div class="panel-title">Shift Cooling Peaks, Save Money</div>
                     </div>
-
-                    <!-- Schematic Diagram built with CSS/Grid -->
-                    <div class="relative h-64 border-2 border-dashed border-slate-300 rounded-lg bg-white flex items-center justify-center overflow-hidden">
-                        
-                        <!-- Grid Layout for Schematic -->
-                        <div class="grid grid-cols-3 gap-8 w-full px-8 items-center text-center">
-                            
-                            <!-- Chiller -->
-                            <div class="flex flex-col items-center z-10">
-                                <div id="chiller-icon" class="text-4xl mb-2 transition-all duration-500">❄️</div>
-                                <div class="font-bold text-slate-700">Existing Chiller</div>
-                                <div id="chiller-status" class="text-xs text-green-600 font-mono mt-1">RUNNING</div>
-                            </div>
-
-                            <!-- Flow Arrows -->
-                            <div class="flex flex-col items-center justify-center h-full">
-                                <div id="flow-arrow-top" class="text-2xl text-slate-300 transition-colors duration-300">➡</div>
-                                <div id="flow-arrow-bottom" class="text-2xl text-slate-300 transition-colors duration-300 transform rotate-180 mt-4">➡</div>
-                            </div>
-
-                            <!-- TES Tank -->
-                            <div class="flex flex-col items-center z-10">
-                                <div class="w-20 h-24 border-2 border-slate-400 rounded-lg relative bg-blue-50 overflow-hidden transition-all duration-1000" id="tank-visual">
-                                    <div id="tank-level" class="absolute bottom-0 left-0 w-full bg-cyan-300 transition-all duration-1000" style="height: 0%;"></div>
-                                    <div class="absolute inset-0 flex items-center justify-center text-2xl z-20">🔋</div>
-                                </div>
-                                <div class="font-bold text-slate-700 mt-2">Modular TES</div>
-                                <div id="battery-status" class="text-xs text-blue-600 font-mono mt-1">CHARGING...</div>
-                            </div>
-                        </div>
-
-                        <!-- Building overlay context -->
-                        <div class="absolute top-2 left-4 text-xs text-slate-400">Utility Grid Power</div>
-                        <div class="absolute top-2 right-4 text-xs text-slate-400">Building Cooling Loop</div>
-
+                </div>
+                
+                <div class="impact-grid">
+                    <div class="impact-card">
+                        <div class="eyebrow">Primary value</div>
+                        <strong>Lower the highest cooling kW</strong>
+                        <p>That single interval often sets a large share of the monthly bill.</p>
                     </div>
-                    <p id="state-desc" class="mt-4 text-sm text-slate-600 text-center bg-blue-50 p-3 rounded border border-blue-100">
-                        <strong>Night Mode (10 PM - 6 AM):</strong> Electricity is cheap ($0.12/kWh). Chiller runs at max efficiency to freeze the modular tanks. No demand charges.
-                    </p>
+                    <div class="impact-card">
+                        <div class="eyebrow">Secondary value</div>
+                        <strong>Shift some kWh off-peak</strong>
+                        <p>Using energy at night (time-of-use pricing) adds additional savings.</p>
+                    </div>
+                    <div class="impact-card">
+                        <div class="eyebrow">Deployment</div>
+                        <strong>Integrates with existing HVAC</strong>
+                        <p>The system retrofits around existing chillers instead of replacing them.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Interactive Financial Simulator -->
-    <section id="financials" class="py-16 bg-slate-900 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Financial Simulation: The 2-Year Payback</h2>
-                <p class="text-slate-400">Adjust the parameters to see how Modular TES economics work for a typical facility.</p>
-            </div>
+    <section id="financials" class="section">
+        <div class="container economics-grid">
+            <div class="panel">
+                <div class="section-kicker">Savings Model</div>
+                <h2 class="section-title">SAVE WITH ICEBREAKER</h2>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Controls -->
-                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                    <h3 class="text-xl font-semibold mb-6 text-cyan-400">Facility Parameters</h3>
-                    
-                    <div class="mb-6">
-                        <label class="block text-sm text-slate-400 mb-2">Building Size (sq ft)</label>
-                        <input type="range" id="input-sqft" min="50000" max="200000" step="10000" value="100000" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-cyan-500">
-                        <div class="flex justify-between text-xs text-slate-500 mt-2">
+                <div class="control-grid">
+                    <div class="range-block">
+                        <div class="range-label-row">
+                            <div class="range-name">Building size</div>
+                            <div id="val-sqft" class="range-value">100,000 sqft</div>
+                        </div>
+                        <input type="range" id="input-sqft" min="50000" max="300000" step="10000" value="100000">
+                        <div class="range-ends">
                             <span>50k</span>
-                            <span id="val-sqft" class="text-white font-mono">100,000</span>
-                            <span>200k</span>
+                            <span>300k</span>
                         </div>
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-sm text-slate-400 mb-2">Demand Charge Rate ($/kW)</label>
-                        <input type="range" id="input-rate" min="15" max="50" step="1" value="35" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-cyan-500">
-                        <div class="flex justify-between text-xs text-slate-500 mt-2">
-                            <span>$15 (Avg)</span>
-                            <span id="val-rate" class="text-white font-mono">$35.00</span>
-                            <span>$50 (NYC/CA)</span>
+                    <div class="range-block">
+                        <div class="range-label-row">
+                            <div class="range-name">Demand charge</div>
+                            <div id="val-demand-rate" class="range-value">$30/kW</div>
+                        </div>
+                        <input type="range" id="input-demand-rate" min="10" max="60" step="1" value="30">
+                        <div class="range-ends">
+                            <span>$10</span>
+                            <span>$60</span>
                         </div>
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-sm text-slate-400 mb-2">System Cost (Estimated)</label>
-                        <div class="text-2xl font-bold text-white font-mono" id="val-cost">$150,000</div>
-                        <div class="text-xs text-green-400 mt-1">Includes 30% ITC deduction</div>
+                    <div class="range-block">
+                        <div class="range-label-row">
+                            <div class="range-name">Electricity price</div>
+                            <div id="val-energy-rate" class="range-value">$0.18/kWh</div>
+                        </div>
+                        <input type="range" id="input-energy-rate" min="8" max="32" step="1" value="18">
+                        <div class="range-ends">
+                            <span>$0.08</span>
+                            <span>$0.32</span>
+                        </div>
+                    </div>
+
+                    <div class="range-block">
+                        <div class="range-label-row">
+                            <div class="range-name">Peak load shifted</div>
+                            <div id="val-shift-rate" class="range-value">40%</div>
+                        </div>
+                        <input type="range" id="input-shift-rate" min="20" max="60" step="1" value="40">
+                        <div class="range-ends">
+                            <span>20%</span>
+                            <span>60%</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Results -->
-                <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col">
-                    <h3 class="text-xl font-semibold mb-6 text-cyan-400">Projected Economics</h3>
+                <div class="control-summary">
+                    <div class="panel-label">ENERGY SHIFTED</div>
+                    <div class="summary-value" id="val-shifted-energy">230,000 kWh shifted</div>
+                    <!-- <div class="muted">Peak load and annual cooling energy are auto-derived from building size. Demand-charge savings are the main driver. Off-peak pricing is modeled as an extra benefit.</div> -->
+                </div>
+            </div>
+
+            <div class="results-panel panel">
+                <div class="panel-title">Annual Cooling Bill Before vs. With Icebreaker</div>
+
+                <div class="result-grid">
+                    <div class="result-card">
+                        <span class="eyebrow">Peak load shifted</span>
+                        <strong id="res-shift">180 kW</strong>
+                    </div>
+                    <div class="result-card">
+                        <span class="eyebrow">Peak-month demand savings</span>
+                        <strong id="res-demand-month">$5,400</strong>
+                    </div>
+                    <div class="result-card">
+                        <span class="eyebrow">Annual energy savings</span>
+                        <strong id="res-energy-annual">$14,490</strong>
+                    </div>
+                    <div class="result-card highlight">
+                        <span class="eyebrow">Total annual savings</span>
+                        <strong id="res-total-annual">$46,890</strong>
+                    </div>
+                    <div class="result-card highlight">
+                        <span class="eyebrow">Target savings goal</span>
+                        <strong id="res-goal">24%</strong>
+                    </div>
+                </div>
+
+                <div class="bill-compare">
+                    <div class="bill-stack">
+                        <div class="eyebrow">Previous cooling bill</div>
+                        <div class="bill-total" id="res-baseline-bill">$264,600</div>
+                        <div class="bill-detail-list">
+                            <div class="bill-line">
+                                <span>Demand charges</span>
+                                <strong id="res-baseline-demand">$81,000</strong>
+                            </div>
+                            <div class="bill-line">
+                                <span>Energy charges</span>
+                                <strong id="res-baseline-energy">$183,600</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bill-stack highlight">
+                        <div class="eyebrow">With Icebreaker</div>
+                        <div class="bill-total" id="res-with-bill">$217,710</div>
+                        <div class="bill-detail-list">
+                            <div class="bill-line">
+                                <span>Demand charges</span>
+                                <strong id="res-with-demand">$48,600</strong>
+                            </div>
+                            <div class="bill-line">
+                                <span>Energy charges</span>
+                                <strong id="res-with-energy">$169,110</strong>
+                            </div>
+                        </div>
+                        <div class="bill-delta">
+                            Annual bill reduction
+                            <strong id="res-bill-delta">$46,890</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="network" class="section">
+        <div class="container network-grid">
+            <div>
+                <div class="section-kicker">ICEBREAKER AND THE GRID</div>
+                <h2 class="section-title">Many ice batteries working as one</h2>
+                <p class="section-copy">
+                    Thermal virtual power plants (VPPs) pre-charge buildings at night, then use stored cooling across the fleet when the grid is under heat-driven strain. They shave hot-hour energy peaks.
+                </p>
+
+                <div class="summary-list">
+                    <div class="summary-card">
+                        <div class="eyebrow">Why it matters</div>
+                        <strong>Many buildings peak at the same time</strong>
+                        <p>On the hottest afternoons, cooling load stacks across a feeder, a campus, or a utility territory.</p>
+                    </div>
+                    <div class="summary-card">
+                        <div class="eyebrow">What the fleet does</div>
+                        <strong>Trim compressor load without losing comfort</strong>
+                        <p>Stored cooling lets the utility call for less compressor power while buildings stay operational.</p>
+                    </div>
+                    <div class="summary-card">
+                        <div class="eyebrow">Why Icebreaker fits</div>
+                        <strong>Cooling load is predictable and recurring</strong>
+                        <p>That makes pre-charge and dispatch easier to explain than a broader DER story.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="network-stage">
+                <div class="network-topline">
+                    <div>
+                        <div class="panel-title">Pre-Charge At Night. Dispatch On Peak Days.</div>
+                    </div>
+                </div>
+
+                <div class="vpp-flow">
+                    <div class="vpp-step">
+                        <small>Night</small>
+                        <strong>Fleet pre-charges</strong>
+                        <p>Buildings fill thermal storage before the critical afternoon window.</p>
+                    </div>
+                    <div class="vpp-step">
+                        <small>Peak event</small>
+                        <strong>Compressors throttle down</strong>
+                        <p>Stored cooling covers part of the load when the feeder or system is stressed.</p>
+                    </div>
+                    <div class="vpp-step">
+                        <small>Grid result</small>
+                        <strong>Lower coincident peak</strong>
+                        <p>The fleet behaves like a targeted flexible demand resource for heat-wave conditions.</p>
+                    </div>
+                </div>
+
+                <div class="vpp-proof">
+                    <div class="eyebrow">What the utility is buying</div>
+                    <strong>Hot-afternoon peak relief from commercial cooling load</strong>
+                    <p>That is the fastest version of the story. It reads clearly because it stays specific: buildings already need cooling, the load is concentrated in predictable hours, and stored ice lets the fleet shed compressor demand when the grid most needs relief.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <div class="container closing-grid">
+            <div class="cta-panel">
+                <div>
+                    <div class="section-kicker">Icebreaker Energy</div>
+                    <h2 class="cta-title">Lower Cooling Bills Now. Build A Thermal VPP Later.</h2>
+                    <p class="cta-copy">
+                        Retrofit commercial buildings with ice batteries and lower utility bills by cutting hot-hour cooling peaks. 
                     
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                        <div class="bg-slate-700 p-4 rounded-lg">
-                            <div class="text-xs text-slate-400 mb-1">Monthly Savings</div>
-                            <div class="text-xl font-bold text-green-400" id="res-monthly">$4,500</div>
-                        </div>
-                        <div class="bg-slate-700 p-4 rounded-lg">
-                            <div class="text-xs text-slate-400 mb-1">Annual Savings</div>
-                            <div class="text-xl font-bold text-green-400" id="res-annual">$54,000</div>
-                        </div>
-                        <div class="bg-slate-700 p-4 rounded-lg ring-2 ring-cyan-500 ring-opacity-50">
-                            <div class="text-xs text-cyan-300 mb-1">ROI (Year 1)</div>
-                            <div class="text-xl font-bold text-white" id="res-roi">60%</div>
-                        </div>
-                        <div class="bg-slate-700 p-4 rounded-lg">
-                            <div class="text-xs text-slate-400 mb-1">Payback Period</div>
-                            <div class="text-xl font-bold text-white" id="res-payback">1.7 Yrs</div>
-                        </div>
-                    </div>
+                        Later, turn a portfolio of buildings into dispatchable thermal load during grid strain to support city-scale energy needs.
+                    </p>
+                    <p class="cta-copy">
+                        Later, turn a portfolio of buildings into dispatchable thermal load during grid strain to support city-scale energy needs.
+                    </p>
+                </div>
+                <div class="hero-actions">
+                    <a class="button primary" href="mailto:hello@icebreaker.energy">contact us for a demo</a>
+                </div>
+            </div>
 
-                    <div class="flex-grow chart-container">
-                        <canvas id="financeChart"></canvas>
+            <div class="cta-panel">
+                <div>
+                    <div class="panel-title">Commercial Cooling Load Shifting at Scale</div>
+                </div>
+                <div class="summary-list">
+                    <div class="summary-card">
+                        <div class="eyebrow">Product</div>
+                        <strong>Ice batteries for commercial HVAC</strong>
+                        <p>Freeze water off-peak, then use stored ice to keep buildings cool during expensive hot hours.</p>
                     </div>
+                    <div class="summary-card">
+                        <div class="eyebrow">Building Value</div>
+                        <strong>Lower peak-driven cooling bills</strong>
+                        <p>Reduce demand charges tied to the hottest-hour cooling spike, saving $50K+ annually.</p>
+                    </div>
+                    <div class="summary-card">
+                        <div class="eyebrow">Grid Value</div>
+                        <strong>Flexible cooling load during grid strain</strong>
+                        <p>A connected fleet can cut coincident compressor load on peak heat days, preventing grid overload, brownouts, and peaker plant emissions.</p>
+                    </div>
+                </div>
+                <div class="footer-line">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Market Map Section -->
-    <section id="market" class="py-16 bg-white border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-slate-900 mb-4">Target Markets: The "Trifecta of Urgency"</h2>
-                <p class="text-slate-600">Focusing on regions where grid stress and policy meet high costs.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 hover:border-cyan-500 transition-colors cursor-default group">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">California</h3>
-                        <span class="text-2xl">☀️</span>
-                    </div>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Highest Rates:</strong> Demand charges >$35/kW.</li>
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Title 24:</strong> Aggressive energy code mandates.</li>
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Duck Curve:</strong> Massive solar penetration needs shifting.</li>
-                    </ul>
-                </div>
-
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 hover:border-cyan-500 transition-colors cursor-default group">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">New York</h3>
-                        <span class="text-2xl">🏙️</span>
-                    </div>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Local Law 97:</strong> Massive fines for building carbon.</li>
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>ConEd Incentives:</strong> Strong rebates for thermal storage.</li>
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Aging Stock:</strong> High density of older, inefficient buildings.</li>
-                    </ul>
-                </div>
-
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 hover:border-cyan-500 transition-colors cursor-default group">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">Texas</h3>
-                        <span class="text-2xl">⚡</span>
-                    </div>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Grid Volatility:</strong> ERCOT instability drives demand for resilience.</li>
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Heat Load:</strong> Extreme cooling degree days.</li>
-                        <li class="flex items-start"><span class="text-cyan-500 mr-2">✓</span><strong>Space:</strong> Availability of land for modular tank arrays.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 border-t border-slate-800 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="text-xl font-bold text-white tracking-tight">PROJECT <span class="text-cyan-500">EQUINOX</span></span>
-            <p class="mt-4 text-slate-400 text-sm">
-                Icebreaker Energy &copy; 2025. <br>
-                Empowering the grid, one chiller at a time.
-            </p>
-        </div>
-    </footer>
-
-    <!-- Logic and Charts -->
     <script>
-        // --- Navigation Logic ---
         function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // --- Chart 1: Hero Load Profile (Chart.js) ---
-        const heroCtx = document.getElementById('heroChart').getContext('2d');
-        
-        // Data generation: Simulate a 24h load curve
-        const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
-        const baseLoad = [100, 90, 80, 80, 85, 100, 150, 200, 250, 300, 350, 380, 400, 410, 420, 410, 400, 350, 300, 250, 200, 150, 120, 110];
-        
-        // TES Load: Higher at night (charging), lower at peak (discharging)
-        const tesLoad = baseLoad.map((load, i) => {
-            if (i >= 22 || i <= 6) return load + 80; // Charging at night
-            if (i >= 14 && i <= 20) return load - 180; // Discharging during peak (2pm-8pm)
-            return load;
-        });
-
-        const heroChart = new Chart(heroCtx, {
-            type: 'line',
-            data: {
-                labels: hours,
-                datasets: [
-                    {
-                        label: 'Standard Building Load (kW)',
-                        data: baseLoad,
-                        borderColor: 'rgba(248, 113, 113, 1)', // Red
-                        backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'With Modular TES (kW)',
-                        data: tesLoad,
-                        borderColor: 'rgba(34, 211, 238, 1)', // Cyan
-                        backgroundColor: 'rgba(34, 211, 238, 0.2)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
-                },
-                scales: {
-                    x: { grid: { display: false, color: '#334155' }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' }, beginAtZero: true }
-                }
+            const target = document.getElementById(id);
+            if (target) {
+                target.scrollIntoView({ block: 'start' });
             }
-        });
-
-        // --- Schematic Interaction Logic ---
-        const btnNight = document.getElementById('btn-night');
-        const btnDay = document.getElementById('btn-day');
-        const tankLevel = document.getElementById('tank-level');
-        const tankVisual = document.getElementById('tank-visual');
-        const statusDesc = document.getElementById('state-desc');
-        const chillerStatus = document.getElementById('chiller-status');
-        const batteryStatus = document.getElementById('battery-status');
-        const topArrow = document.getElementById('flow-arrow-top');
-        const bottomArrow = document.getElementById('flow-arrow-bottom');
-
-        function setNightMode() {
-            // UI State
-            btnNight.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
-            btnNight.classList.remove('text-slate-500');
-            btnDay.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
-            btnDay.classList.add('text-slate-500');
-
-            // Visual State
-            tankLevel.style.height = '100%'; // Full
-            tankLevel.style.backgroundColor = '#67e8f9'; // Cyan (Ice)
-            tankVisual.style.borderColor = '#22d3ee';
-            
-            chillerStatus.textContent = 'RUNNING (HIGH EFFICIENCY)';
-            chillerStatus.className = 'text-xs text-green-600 font-mono mt-1';
-            
-            batteryStatus.textContent = 'CHARGING (FREEZING)';
-            batteryStatus.className = 'text-xs text-blue-600 font-mono mt-1';
-
-            topArrow.style.color = '#3b82f6'; // Blue flow
-            bottomArrow.style.color = '#3b82f6';
-
-            statusDesc.innerHTML = '<strong>Night Mode (10 PM - 6 AM):</strong> Electricity is cheap ($0.12/kWh). Chiller runs at max efficiency to freeze the modular tanks. No demand charges.';
         }
 
-        function setDayMode() {
-            // UI State
-            btnDay.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
-            btnDay.classList.remove('text-slate-500');
-            btnNight.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
-            btnNight.classList.add('text-slate-500');
-
-            // Visual State
-            tankLevel.style.height = '20%'; // Depleting
-            tankLevel.style.backgroundColor = '#bae6fd'; // Watery
-            tankVisual.style.borderColor = '#fb923c'; // Orange tint for heat
-            
-            chillerStatus.textContent = 'IDLE / LOW LOAD';
-            chillerStatus.className = 'text-xs text-slate-400 font-mono mt-1';
-            
-            batteryStatus.textContent = 'DISCHARGING (MELTING)';
-            batteryStatus.className = 'text-xs text-orange-600 font-mono mt-1';
-
-            topArrow.style.color = '#fb923c'; // Orange flow
-            bottomArrow.style.color = '#fb923c';
-
-            statusDesc.innerHTML = '<strong>Peak Mode (4 PM - 9 PM):</strong> Grid rates skyrocket. Chiller throttles down. Ice melts to provide cooling. <strong>Zero Demand Charges incurred.</strong>';
-        }
-
-        btnNight.addEventListener('click', setNightMode);
-        btnDay.addEventListener('click', setDayMode);
-
-        // Init Default
-        setNightMode();
-
-
-        // --- Financial Simulator Logic & Chart ---
         const sqftInput = document.getElementById('input-sqft');
-        const rateInput = document.getElementById('input-rate');
-        
-        const valSqft = document.getElementById('val-sqft');
-        const valRate = document.getElementById('val-rate');
-        const valCost = document.getElementById('val-cost');
-        
-        const resMonthly = document.getElementById('res-monthly');
-        const resAnnual = document.getElementById('res-annual');
-        const resRoi = document.getElementById('res-roi');
-        const resPayback = document.getElementById('res-payback');
+        const demandRateInput = document.getElementById('input-demand-rate');
+        const energyRateInput = document.getElementById('input-energy-rate');
+        const shiftRateInput = document.getElementById('input-shift-rate');
 
-        const financeCtx = document.getElementById('financeChart').getContext('2d');
-        
-        const financeChart = new Chart(financeCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
-                datasets: [
-                    {
-                        label: 'Cumulative Cash Flow ($)',
-                        data: [-90000, -36000, 18000, 72000, 126000], // Placeholders
-                        backgroundColor: (ctx) => {
-                            const val = ctx.raw;
-                            return val < 0 ? 'rgba(248, 113, 113, 0.5)' : 'rgba(34, 211, 238, 0.5)';
-                        },
-                        borderColor: (ctx) => {
-                            const val = ctx.raw;
-                            return val < 0 ? 'rgba(248, 113, 113, 1)' : 'rgba(34, 211, 238, 1)';
-                        },
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) { label += ': '; }
-                                if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-                                }
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: { color: '#334155' },
-                        ticks: { color: '#94a3b8', callback: (value) => '$' + value / 1000 + 'k' }
-                    },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                }
-            }
-        });
+        const valSqft = document.getElementById('val-sqft');
+        const valDemandRate = document.getElementById('val-demand-rate');
+        const valEnergyRate = document.getElementById('val-energy-rate');
+        const valShiftRate = document.getElementById('val-shift-rate');
+        const valShiftedEnergy = document.getElementById('val-shifted-energy');
+
+        const resShift = document.getElementById('res-shift');
+        const resDemandMonth = document.getElementById('res-demand-month');
+        const resEnergyAnnual = document.getElementById('res-energy-annual');
+        const resTotalAnnual = document.getElementById('res-total-annual');
+        const resGoal = document.getElementById('res-goal');
+        const resBaselineBill = document.getElementById('res-baseline-bill');
+        const resBaselineDemand = document.getElementById('res-baseline-demand');
+        const resBaselineEnergy = document.getElementById('res-baseline-energy');
+        const resWithBill = document.getElementById('res-with-bill');
+        const resWithDemand = document.getElementById('res-with-demand');
+        const resWithEnergy = document.getElementById('res-with-energy');
+        const resBillDelta = document.getElementById('res-bill-delta');
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatKwhRate(value) {
+            return `$${value.toFixed(2)}/kWh`;
+        }
+
+        function autoPeakFromSqft(sqft) {
+            return Math.round((sqft * 0.0045) / 10) * 10;
+        }
+
+        function autoEnergyFromSqft(sqft) {
+            return Math.round((sqft * 7.2) / 20000) * 20000;
+        }
 
         function updateEconomics() {
-            // Inputs
-            const sqft = parseInt(sqftInput.value);
-            const rate = parseInt(rateInput.value);
+            const sqft = parseInt(sqftInput.value, 10);
+            const peakLoad = autoPeakFromSqft(sqft);
+            const demandRate = parseInt(demandRateInput.value, 10);
+            const energyRate = parseInt(energyRateInput.value, 10) / 100;
+            const annualCoolingEnergy = autoEnergyFromSqft(sqft);
+            const shiftFraction = parseInt(shiftRateInput.value, 10) / 100;
 
-            // Assumptions
-            const loadFactor = 0.002; // kW per sqft peak load estimate (approx 200 tons for 100k sqft)
-            const peakLoad = sqft * loadFactor; // 200kW for 100k sqft
-            const shiftPercentage = 0.50; // We shift 50% of load
-            const shiftedLoad = peakLoad * shiftPercentage; // 100kW shifted
+            const shiftedLoad = peakLoad * shiftFraction;
+            const peakMonthDemandSavings = shiftedLoad * demandRate;
+            const coolingSeasonMonths = 6;
+            const annualDemandSavings = peakMonthDemandSavings * coolingSeasonMonths;
 
-            const arbitrageSavings = 1000 * (sqft / 100000); // Rough arbitrage estimate scaling
-            const demandSavingsMonthly = shiftedLoad * rate;
-            const totalMonthlySavings = demandSavingsMonthly + arbitrageSavings;
-            const annualSavings = totalMonthlySavings * 12;
+            const movedEnergyShare = Math.min(0.42, shiftFraction * 0.8);
+            const shiftedEnergy = annualCoolingEnergy * movedEnergyShare;
+            const offPeakDiscount = 0.35;
+            const annualEnergySavings = shiftedEnergy * energyRate * offPeakDiscount;
 
-            // CapEx Model (Linear scaling for simplicity of demo)
-            // Base $150k for 100k sqft system, ITC 30%
-            const rawCost = 150000 * (sqft / 100000);
-            const netCost = rawCost * 0.7; // After 30% ITC
+            const baselineDemandCharges = peakLoad * demandRate * coolingSeasonMonths;
+            const withDemandCharges = baselineDemandCharges - annualDemandSavings;
+            const baselineEnergyCharges = annualCoolingEnergy * energyRate;
+            const withEnergyCharges = baselineEnergyCharges - annualEnergySavings;
+            const totalAnnualSavings = annualDemandSavings + annualEnergySavings;
+            const baselineBill = baselineDemandCharges + baselineEnergyCharges;
+            const withBill = withDemandCharges + withEnergyCharges;
+            const savingsGoal = baselineBill > 0 ? (totalAnnualSavings / baselineBill) * 100 : 0;
 
-            const paybackYears = netCost / annualSavings;
-            const roiYear1 = (annualSavings / netCost) * 100;
+            valSqft.textContent = `${sqft.toLocaleString()} sqft`;
+            valDemandRate.textContent = `$${demandRate}/kW`;
+            valEnergyRate.textContent = formatKwhRate(energyRate);
+            valShiftRate.textContent = `${Math.round(shiftFraction * 100)}%`;
+            valShiftedEnergy.textContent = `${Math.round(shiftedEnergy).toLocaleString()} kWh shifted`;
 
-            // Update UI Text
-            valSqft.innerText = sqft.toLocaleString();
-            valRate.innerText = '$' + rate.toFixed(2);
-            valCost.innerText = '$' + Math.round(netCost).toLocaleString();
+            resShift.textContent = `${Math.round(shiftedLoad).toLocaleString()} kW`;
+            resDemandMonth.textContent = formatCurrency(Math.round(peakMonthDemandSavings));
+            resEnergyAnnual.textContent = formatCurrency(Math.round(annualEnergySavings));
+            resTotalAnnual.textContent = formatCurrency(Math.round(totalAnnualSavings));
+            resGoal.textContent = `${Math.round(savingsGoal)}%`;
 
-            resMonthly.innerText = '$' + Math.round(totalMonthlySavings).toLocaleString();
-            resAnnual.innerText = '$' + Math.round(annualSavings).toLocaleString();
-            resRoi.innerText = Math.round(roiYear1) + '%';
-            resPayback.innerText = paybackYears.toFixed(1) + ' Yrs';
-
-            // Update Chart Data (Cumulative Cash Flow)
-            // Year 0 = -NetCost
-            // Year N = Previous + AnnualSavings
-            const cf = [];
-            let current = -netCost;
-            for(let i=1; i<=5; i++) {
-                current += annualSavings;
-                cf.push(current);
-            }
-            
-            financeChart.data.datasets[0].data = cf;
-            financeChart.update();
+            resBaselineBill.textContent = formatCurrency(Math.round(baselineBill));
+            resBaselineDemand.textContent = formatCurrency(Math.round(baselineDemandCharges));
+            resBaselineEnergy.textContent = formatCurrency(Math.round(baselineEnergyCharges));
+            resWithBill.textContent = formatCurrency(Math.round(withBill));
+            resWithDemand.textContent = formatCurrency(Math.round(withDemandCharges));
+            resWithEnergy.textContent = formatCurrency(Math.round(withEnergyCharges));
+            resBillDelta.textContent = formatCurrency(Math.round(totalAnnualSavings));
         }
 
-        // Listeners
         sqftInput.addEventListener('input', updateEconomics);
-        rateInput.addEventListener('input', updateEconomics);
 
-        // Init Calculation
+        demandRateInput.addEventListener('input', updateEconomics);
+        energyRateInput.addEventListener('input', updateEconomics);
+        shiftRateInput.addEventListener('input', updateEconomics);
+
         updateEconomics();
-
     </script>
 </body>
 </html>
