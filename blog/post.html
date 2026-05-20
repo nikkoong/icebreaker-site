@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icebreaker Blog Post</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg: #040507;
+            --panel: #0b0e13;
+            --line: rgba(255, 255, 255, 0.09);
+            --text: #f5f7fb;
+            --muted: #99a3b5;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .container {
+            width: min(860px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(18px);
+            background: rgba(4, 5, 7, 0.82);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar-inner {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand,
+        .back-link {
+            color: var(--text);
+            text-decoration: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .shell {
+            padding: 32px 0 72px;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 12px 0 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.2rem, 6vw, 4.4rem);
+            line-height: 0.94;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+        }
+
+        .cover {
+            width: 100%;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: 24px;
+            margin-top: 24px;
+            border: 1px solid var(--line);
+        }
+
+        .post-body {
+            margin-top: 28px;
+            color: var(--text);
+            line-height: 1.75;
+            font-size: 1rem;
+        }
+
+        .post-body h1,
+        .post-body h2,
+        .post-body h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin: 32px 0 12px;
+        }
+
+        .post-body p,
+        .post-body ul,
+        .post-body ol {
+            color: var(--muted);
+            margin: 0 0 16px;
+        }
+
+        .post-body img {
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            margin: 16px 0 24px;
+        }
+
+        .post-body code {
+            background: rgba(255,255,255,0.06);
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                width: min(100% - 32px, 860px);
+            }
+
+            .shell {
+                padding: 24px 0 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="../index.html">Icebreaker</a>
+            <a class="back-link" href="./index.html">All posts</a>
+        </div>
+    </nav>
+
+    <main class="shell">
+        <div class="container">
+            <div class="meta" id="post-date"></div>
+            <h1 id="post-title"></h1>
+            <img class="cover" id="post-cover" alt="" hidden>
+            <article class="post-body" id="post-body"></article>
+        </div>
+    </main>
+
+    <script>
+        function getSlug() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('slug');
+        }
+
+        function parseFrontmatter(markdown) {
+            if (!markdown.startsWith('---')) {
+                return { meta: {}, content: markdown };
+            }
+
+            const end = markdown.indexOf('\n---', 3);
+            if (end === -1) {
+                return { meta: {}, content: markdown };
+            }
+
+            const rawMeta = markdown.slice(3, end).trim();
+            const content = markdown.slice(end + 4).trim();
+            const meta = {};
+
+            rawMeta.split('\n').forEach((line) => {
+                const separator = line.indexOf(':');
+                if (separator === -1) {
+                    return;
+                }
+
+                const key = line.slice(0, separator).trim();
+                const value = line.slice(separator + 1).trim();
+                meta[key] = value;
+            });
+
+            return { meta, content };
+        }
+
+        function stripLeadingTitle(content, title) {
+            const lines = content.split('\n');
+            const firstLine = (lines[0] || '').trim();
+            const normalizedTitle = (title || '').trim().toLowerCase();
+
+            if (!firstLine.startsWith('# ')) {
+                return content;
+            }
+
+            const headingText = firstLine.slice(2).trim().toLowerCase();
+            if (normalizedTitle && headingText !== normalizedTitle) {
+                return content;
+            }
+
+            return lines.slice(1).join('\n').trim();
+        }
+
+        async function loadPost() {
+            const slug = getSlug();
+            if (!slug) {
+                document.getElementById('post-title').textContent = 'Post not found';
+                return;
+            }
+
+            const response = await fetch(`../posts/${slug}.md`);
+            const markdown = await response.text();
+            const { meta, content } = parseFrontmatter(markdown);
+            const renderedContent = stripLeadingTitle(content, meta.title || slug);
+
+            document.title = `${meta.title || 'Icebreaker Blog Post'} | Icebreaker Energy`;
+            document.getElementById('post-date').textContent = meta.date || '';
+            document.getElementById('post-title').textContent = meta.title || slug;
+
+            const cover = document.getElementById('post-cover');
+            if (meta.coverImage) {
+                cover.src = meta.coverImage;
+                cover.alt = meta.coverAlt || meta.title || '';
+                cover.hidden = false;
+            }
+
+            document.getElementById('post-body').innerHTML = marked.parse(renderedContent);
+        }
+
+        loadPost();
+    </script>
+</body>
+</html>
