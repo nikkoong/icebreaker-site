@@ -78,13 +78,18 @@
             letter-spacing: -0.05em;
         }
 
+        /* Make cover and inline images narrower (approx 50% of text width)
+           and center them on large screens. On small screens they remain
+           full-width for readability. */
         .cover {
-            width: 100%;
+            width: 50%;
+            max-width: 720px;
             max-height: 420px;
             object-fit: cover;
             border-radius: 24px;
-            margin-top: 24px;
+            margin: 24px auto 0;
             border: 1px solid var(--line);
+            display: block;
         }
 
         .post-body {
@@ -111,11 +116,22 @@
             margin: 0 0 16px;
         }
 
+        /* Inline images in posts should be ~50% of the reading column on
+           desktop for a less-dominant visual weight, and centered. */
         .post-body img {
-            width: 100%;
+            width: 50%;
+            max-width: 100%;
             border-radius: 20px;
             border: 1px solid var(--line);
-            margin: 16px 0 24px;
+            margin: 16px auto 24px;
+            display: block;
+        }
+
+        /* Links inside post content should match the main text color and be
+           underlined for clear affordance on the dark background. */
+        .post-body a {
+            color: var(--text);
+            text-decoration: underline;
         }
 
         .post-body code {
@@ -131,6 +147,13 @@
 
             .shell {
                 padding: 24px 0 48px;
+            }
+            /* On narrow viewports keep images full-width for readability */
+            .cover,
+            .post-body img {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
             }
         }
     </style>

@@ -259,7 +259,7 @@
         }
 
         .hero-title {
-            font-size: clamp(4rem, 11vw, 8.4rem);
+            font-size: clamp(3rem, 8vw, 5rem);
             line-height: 0.86;
             text-transform: uppercase;
             max-width: 8.2ch;
@@ -1465,8 +1465,8 @@
     <header id="overview" class="section hero">
         <div class="container hero-grid">
             <div class="section-shell">
-                <div class="section-kicker">Commercial Cooling</div>
-                <h1 class="hero-title">Ice Batteries <span>For Peak Cooling</span></h1>
+                <!-- <div class="section-kicker">Commercial Cooling</div> -->
+                <h1 class="hero-title">Ice Batteries <span>Cool Buildings</span></h1>
                 <p class="hero-sub">
                     Icebreaker Energy builds and installs thermal ice batteries in commercial buildings. We freeze water at night, melt ice when it's hot, and cut cooling bills by avoiding expensive cooling during the hottest hours.
                 </p>
@@ -1496,7 +1496,7 @@
             <div class="hero-stage">
                 <div class="stage-topline">
                     <div>
-                        <div class="panel-title">Make Ice At Night. Melt Ice to cool the building in the afternoon.</div>
+                        <div class="panel-title">Make Ice At Night. Melt Ice to cool buildings in the afternoon.</div>
                     </div>
                     
                 </div>
@@ -1514,7 +1514,7 @@
                         <div>
                             <small>Afternoon</small>
                             <strong>Shift peak load</strong>
-                            <p>Lower hottest-hour chiller load by melting stored ice. Passively power HVAC system without losing comfort.</p>
+                            <p>Lower hottest-hour chiller loads by melting stored ice. Passively power HVAC systems without losing comfort.</p>
                         </div>
                         <div class="step-visual step-afternoon"></div>
                     </div>
@@ -1536,7 +1536,7 @@
         <div class="container story-grid">
             <div class="section-shell">
                 
-                <h2 class="section-title">High bills from peak power</h2>
+                <h2 class="section-title">High HVAC bills</h2>
                 <p class="section-copy">
                     Commercial electric bills often have two parts: total energy used and the highest power draw during the billing cycle. Cooling spikes on hot afternoons increase both.
                 </p>
@@ -1545,55 +1545,32 @@
                     <div class="bill-card">
                         <div class="eyebrow">Energy charge</div>
                         <div class="bill-big">kWh used</div>
-                        <p>You pay for the electricity consumed across the month.</p>
+                        <p>You pay per kilowatt-hour for the electricity consumed.</p>
                     </div>
                     <div class="bill-card">
                         <div class="eyebrow">Demand charge</div>
                         <div class="bill-big">Highest kW spike</div>
-                        <p>You also pay for the single biggest power draw over any 15-minute period.</p>
+                        <p>You pay extra fees for the single biggest power draw over any 15-minute period.</p>
                     </div>
                     <div class="bill-card">
                         <div class="eyebrow">What Icebreaker does</div>
-                        <div class="bill-big">Move cooling earlier</div>
-                        <p>Store cold at night, then use stored ice during the hottest hours so the cooling peak is lower.</p>
+                        <div class="bill-big">Lower HVAC bills with stored ice and minimal modification</div>
+                        <p>Make ice at night, then use stored ice during the hottest hours so the cooling peak is lower. We retrofit around existing chillers instead of replacing them.</p>
                     </div>
+
                 </div>
 
             </div>
 
-            <div class="diagram-panel">
-                <div class="panel-top">
-                    <div>
-                        <div class="panel-title">Shift Cooling Peaks, Save Money</div>
-                    </div>
-                </div>
-                
-                <div class="impact-grid">
-                    <div class="impact-card">
-                        <div class="eyebrow">Primary value</div>
-                        <strong>Lower the highest cooling kW</strong>
-                        <p>That single interval often sets a large share of the monthly bill.</p>
-                    </div>
-                    <div class="impact-card">
-                        <div class="eyebrow">Secondary value</div>
-                        <strong>Shift some kWh off-peak</strong>
-                        <p>Using energy at night (time-of-use pricing) adds additional savings.</p>
-                    </div>
-                    <div class="impact-card">
-                        <div class="eyebrow">Deployment</div>
-                        <strong>Integrates with existing HVAC</strong>
-                        <p>The system retrofits around existing chillers instead of replacing them.</p>
-                    </div>
-                </div>
-            </div>
+    
         </div>
     </section>
 
     <section id="financials" class="section">
         <div class="container economics-grid">
             <div class="panel">
-                <div class="section-kicker">Savings Model</div>
-                <h2 class="section-title">SAVE WITH ICEBREAKER</h2>
+                <div class="section-kicker">Savings Calculator</div>
+                <h2 class="section-title">ICEBREAK YOUR BILLS</h2>
 
                 <div class="control-grid">
                     <div class="range-block">
@@ -1634,10 +1611,9 @@
 
                 </div>
 
-                <div class="control-summary">
-                    <div class="panel-label">ENERGY SHIFTED</div>
-                    <div class="summary-value" id="val-shifted-energy">230,000 kWh shifted</div>
-                    <!-- <div class="muted">Peak load and annual cooling energy are auto-derived from building size. Demand-charge savings are the main driver. Off-peak pricing is modeled as an extra benefit.</div> -->
+                <div>
+                    <!-- <div class="panel-label"></div> -->
+                    <div class="summary-value" id="val-shifted-energy"></div>
                 </div>
             </div>
 
@@ -1697,11 +1673,11 @@
 
                 <details class="assumptions-panel">
                     <summary>
-                        <span class="assumptions-copy">Major assumptions with this model</span>
+                        <span class="assumptions-copy">Savings Model Details</span>
                         <span class="assumptions-icon" aria-hidden="true">▾</span>
                     </summary>
                     <div class="assumptions-body">
-                        <p>This model uses fixed demo assumptions plus your selected building size, demand charge, and electricity price. Every number on the right side is generated from the assumptions below.</p>
+                        <p>This model uses fixed demo assumptions plus your selected building size, demand charge, and electricity price. </p>
                         <div class="assumptions-math">
                             <strong>Current model inputs and formulas</strong>
                             <span id="assumptions-math">Peak load = 100,000 sqft x 0.0045 kW/sqft = 450 kW</span>
@@ -1713,7 +1689,7 @@
                             </div>
                             <div class="assumption-item">
                                 <strong>Peak load shifted</strong>
-                                <span id="assumption-shift-load">The model assumes Icebreaker shifts 40% of peak cooling load, so 180 kW of a 450 kW peak is moved out of the expensive interval.</span>
+                                <span id="assumption-shift-load">Icebreaker aims to shift 40% of peak cooling load, so 180 kW of a 450 kW peak is moved out of the expensive interval.</span>
                             </div>
                             <div class="assumption-item">
                                 <strong>Cooling season</strong>
@@ -1746,8 +1722,8 @@
         <div class="container network-grid">
             <div class="cta-panel">
                 <div>
-                    <div class="section-kicker">Icebreaker Energy</div>
-                    <h2 class="cta-title">Lower Cooling Bills Now. Build A Thermal VPP Later.</h2>
+                    <div class="section-kicker">The Future of Icebreaker Energy</div>
+                    <h2 class="cta-title">Lower Bills Now. Connect Ice Batteries Later.</h2>
                     <p class="cta-copy">
                         Retrofit commercial buildings with ice batteries and lower utility bills by cutting hot-hour cooling peaks.
                     </p>
@@ -1755,7 +1731,7 @@
                         Later, turn a portfolio of buildings into dispatchable thermal load during grid strain to support city-scale energy needs.
                     </p>
                     <p class="cta-copy">
-                        Thermal virtual power plants (VPPs) pre-charge buildings at night, then use stored cooling across the fleet when the grid is under heat-driven strain. They shave hot-hour energy peaks.
+                        Thermal virtual power plants (VPPs) pre-charge buildings at night, then use stored cooling across the fleet when the grid is under heat-driven strain. They shave hot-hour energy peaks and share savings to participants.
                     </p>
                 </div>
             </div>
@@ -1763,25 +1739,25 @@
             <div class="diagram-panel">
                 <div class="panel-top">
                     <div>
-                        <div class="panel-title">Thermal VPP At Grid Scale</div>
+                        <div class="panel-title">Thermal Virtual Power Plants (VPPs) At Grid Scale</div>
                     </div>
                 </div>
 
                 <div class="vpp-benefits">
                     <div class="vpp-benefit">
-                        <div class="eyebrow">Peak Relief</div>
+                        <!-- <div class="eyebrow">Peak Relief</div> -->
                         <strong>Peak relief at the exact hours the grid is stressed</strong>
-                        <p>Cooling demand clusters on hot afternoons. A thermal VPP cuts load at the same time distribution feeders, substations, and system peaks are under the most strain.</p>
+                        <p>Cooling demand occurs on hot afternoons. A thermal VPP cuts load at the same hour our grid infrastructure is under the most strain.</p>
                     </div>
                     <div class="vpp-benefit">
-                        <div class="eyebrow">Dispatch</div>
+                        <!-- <div class="eyebrow">Dispatch</div> -->
                         <strong>Uses predictable commercial HVAC load</strong>
-                        <p>Cooling is recurring, weather-linked, and operationally understandable. That makes dispatch easier to plan and easier for utilities and building owners to trust.</p>
+                        <p>Cooling is recurring, weather-linked, and operationally predictable. That makes dispatch easier to plan and easier for utilities and building owners to trust.</p>
                     </div>
                     <div class="vpp-benefit">
-                        <div class="eyebrow">Grid-scale impact</div>
+                        <!-- <div class="eyebrow">Grid-scale impact</div> -->
                         <strong>Huge grid-scale benefit without sacrificing comfort</strong>
-                        <p>A fleet of buildings can reduce coincident compressor demand, defer grid upgrades, lower peaker-plant use, and make the grid cleaner and more efficient while keeping occupants cool.</p>
+                        <p>A fleet of buildings can reduce coincident compressor demand, defer grid and building upgrades, lower peaker-plant use, and make the grid cleaner and more efficient while keeping occupants cool.</p>
                     </div>
                 </div>
             </div>
@@ -1793,7 +1769,7 @@
             <div class="about-panel panel">
                 <div class="about-grid">
                     <div class="about-photo-wrap">
-                        <img class="about-photo" src="./nikko_profile_pic.jpg" alt="Nikko Ong">
+                        <img class="about-photo" src="../images/nikko_profile_pic.jpg" alt="Nikko Ong">
                     </div>
                     <div class="about-copy">
                         <div class="section-kicker">Founder</div>
@@ -1801,9 +1777,9 @@
                             <h2 class="about-name">Nikko Ong</h2>
                             <div class="about-role">Founder of Icebreaker Energy</div>
                         </div>
-                        <p>Nikko is a mechanical and thermal engineer with experience spanning defense-grade cooling systems, the hottest parts of commercial jet engines, and extensive writing on the grid and how technology can make it cleaner and more efficient.</p>
-                        <p>He has worked as a product leader at a fintech company building AI systems at scale for 150M+ customers. He has a background in systems thinking, heat transfer, and HVAC technologies.</p>
-                        <p>He founded Icebreaker Energy in 2025 with a desire to make cooling smarter. After experiencing a muggy NYC summer, he noticed how much outside heat was produced by our cooling systems and wanted to find a way to make cooling more efficient and less wasteful.</p>
+                        <p>Nikko is a mechanical and thermal engineer with experience spanning cooling systems for directed-energy weapons, the hottest parts of commercial jet engines, and extensive writing on the grid and how technology can make it cleaner and more efficient.</p>
+                        <p>He has worked as a product leader at a fintech company building systems at scale for 150M+ customers. He has a background in systems thinking, heat transfer, and HVAC technologies.</p>
+                        <p>He founded Icebreaker Energy in 2025 with a desire to make cooling more efficient. After experiencing a muggy NYC summer, he noticed how much unnecessary heat was produced by our cooling systems and knew there was a way to make cooling more intelligent and less wasteful.</p>
                     </div>
                 </div>
             </div>
@@ -2008,16 +1984,16 @@
             valSqft.textContent = `${sqft.toLocaleString()} sqft`;
             valDemandRate.textContent = `$${demandRate}/kW`;
             valEnergyRate.textContent = formatKwhRate(energyRate);
-            valShiftedEnergy.textContent = `${Math.round(shiftedEnergy).toLocaleString()} kWh shifted`;
+            // valShiftedEnergy.textContent = `${Math.round(shiftedEnergy).toLocaleString()} kWh shifted`;
 
-            assumptionsMath.textContent = `Peak load = ${sqft.toLocaleString()} sqft x 0.0045 kW/sqft = ${Math.round(peakLoad).toLocaleString()} kW. Annual cooling energy = ${sqft.toLocaleString()} sqft x 7.2 kWh/sqft-year, rounded to ${annualCoolingEnergy.toLocaleString()} kWh/year.`;
+            // assumptionsMath.textContent = `Peak load = ${sqft.toLocaleString()} sqft x 0.0045 kW/sqft = ${Math.round(peakLoad).toLocaleString()} kW. Annual cooling energy = ${sqft.toLocaleString()} sqft x 7.2 kWh/sqft-year, rounded to ${annualCoolingEnergy.toLocaleString()} kWh/year.`;
             assumptionPeakLoad.textContent = `Cooling peak intensity is fixed at 0.0045 kW/sqft, so a ${sqft.toLocaleString()} sqft building is modeled at ${Math.round(peakLoad).toLocaleString()} kW peak cooling load.`;
-            assumptionShiftLoad.textContent = `The model assumes Icebreaker shifts 40% of peak cooling load, so ${Math.round(shiftedLoad).toLocaleString()} kW of a ${Math.round(peakLoad).toLocaleString()} kW peak is moved out of the expensive interval.`;
+            assumptionShiftLoad.textContent = `Icebreaker aims to shift 40% of peak cooling load, so ${Math.round(shiftedLoad).toLocaleString()} kW of a ${Math.round(peakLoad).toLocaleString()} kW peak is moved out of the expensive interval.`;
             assumptionDemandSavings.textContent = `Demand-charge savings use a 6-month cooling season: ${Math.round(shiftedLoad).toLocaleString()} kW shifted x $${demandRate}/kW x 6 months = ${formatCurrency(Math.round(annualDemandSavings))}/year.`;
-            assumptionCoolingEnergy.textContent = `Annual cooling energy is auto-derived at 7.2 kWh/sqft-year and rounded to 20,000 kWh increments, so ${sqft.toLocaleString()} sqft becomes ${annualCoolingEnergy.toLocaleString()} kWh/year.`;
-            assumptionShiftedEnergy.textContent = `The model shifts ${Math.round(movedEnergyShare * 100)}% of annual cooling energy because moved energy share = min(42%, 40% x 0.8), so ${annualCoolingEnergy.toLocaleString()} kWh x ${Math.round(movedEnergyShare * 100)}% = ${Math.round(shiftedEnergy).toLocaleString()} kWh shifted.`;
+            assumptionCoolingEnergy.textContent = `HVAC costs typically amount to 45% of total energy consumed (~16 kWh/sqft-year), set here at 7.2 kWh/sqft-year and rounded to 20,000 kWh increments, so ${sqft.toLocaleString()} sqft becomes ${annualCoolingEnergy.toLocaleString()} kWh/year.`;
+            assumptionShiftedEnergy.textContent = `The model shifts ${Math.round(movedEnergyShare * 100)}% of annual cooling energy, so ${annualCoolingEnergy.toLocaleString()} kWh x ${Math.round(movedEnergyShare * 100)}% = ${Math.round(shiftedEnergy).toLocaleString()} kWh shifted.`;
             assumptionEnergySavings.textContent = `Energy-charge savings assume a fixed 35% discount on shifted energy, so ${Math.round(shiftedEnergy).toLocaleString()} kWh x ${formatKwhRate(energyRate)} x 35% = ${formatCurrency(Math.round(annualEnergySavings))}/year.`;
-            assumptionBillCompare.textContent = `Baseline bill = ${formatCurrency(Math.round(baselineDemandCharges))} demand charges + ${formatCurrency(Math.round(baselineEnergyCharges))} energy charges = ${formatCurrency(Math.round(baselineBill))}. With Icebreaker bill = ${formatCurrency(Math.round(withBill))}.`;
+            assumptionBillCompare.textContent = `Baseline bill = ${formatCurrency(Math.round(baselineDemandCharges))} demand charges + ${formatCurrency(Math.round(baselineEnergyCharges))} energy charges = ${formatCurrency(Math.round(baselineBill))}. With Icebreaker, the bill = ${formatCurrency(Math.round(withBill))}.`;
 
             resPeakLoad.textContent = `${Math.round(peakLoad).toLocaleString()} kW`;
             resShift.textContent = `${Math.round(shiftedLoad).toLocaleString()} kW`;
