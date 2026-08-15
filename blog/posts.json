@@ -3,7 +3,7 @@
     "slug": "how-commercial-buildings-cool-today",
     "title": "How commercial buildings cool today",
     "date": "2026-05-20",
-    "excerpt": "An editorial look at how office buildings actually stay cool, from rooftop units to chillers, and why the modern cooling stack is both impressive and strangely wasteful.",
+    "excerpt": "How office buildings actually stay cool, from rooftop units to chillers, and why modern cooling is both impressive and strangely wasteful.",
     "coverImage": "",
     "coverAlt": ""
   },
@@ -11,7 +11,7 @@
     "slug": "nyc-demand-charges-office-buildings",
     "title": "Demand charges in NYC office buildings and what an ice battery can do",
     "date": "2026-05-20",
-    "excerpt": "A practical NYC office-building case study on demand charges, cooling peaks, and where ice thermal storage can create savings.",
+    "excerpt": "A NYC office-building case study on demand charges, cooling peaks, and where ice thermal storage can create savings.",
     "coverImage": "",
     "coverAlt": ""
   },
@@ -19,8 +19,8 @@
     "slug": "welcome-to-icebreaker",
     "title": "Welcome to the Icebreaker blog",
     "date": "2026-05-18",
-    "excerpt": "Why Nikko Ong started Icebreaker Energy and why cooling became the problem he could not stop thinking about.",
-    "coverImage": "../nikko_profile_pic.jpg",
-    "coverAlt": "Founder of Icebreaker Energy"
+    "excerpt": "A blog about cooling and thermal storage",
+    "coverImage": "",
+    "coverAlt": ""
   }
 ]

@@ -8,6 +8,8 @@ const postsDir = path.join(root, 'posts');
 const outputPath = path.join(root, 'blog', 'posts.json');
 
 function parseFrontmatter(markdown) {
+    // Simple but more robust frontmatter parser.
+    // Supports single-line `key: value`, quoted values, and block scalars using `|`.
     if (!markdown.startsWith('---')) {
         return {};
     }
@@ -18,18 +20,44 @@ function parseFrontmatter(markdown) {
     }
 
     const raw = markdown.slice(3, end).trim();
+    const lines = raw.split('\n');
     const meta = {};
 
-    raw.split('\n').forEach((line) => {
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
         const separator = line.indexOf(':');
         if (separator === -1) {
-            return;
+            continue;
         }
 
         const key = line.slice(0, separator).trim();
-        const value = line.slice(separator + 1).trim();
+        let value = line.slice(separator + 1).trim();
+
+        // Block scalar (|) — collect subsequent indented lines
+        if (value === '|') {
+            const block = [];
+            i++;
+            while (i < lines.length) {
+                const next = lines[i];
+                // Stop if we encounter another top-level key
+                if (/^[^\s].*:\s*/.test(next)) {
+                    i--; // back up so outer loop handles this line
+                    break;
+                }
+                // Remove a single leading space if present (common in YAML blocks)
+                block.push(next.replace(/^\s?/, ''));
+                i++;
+            }
+            value = block.join('\n').trim();
+        }
+
+        // Strip surrounding quotes if present
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.slice(1, -1);
+        }
+
         meta[key] = value;
-    });
+    }
 
     return meta;
 }
